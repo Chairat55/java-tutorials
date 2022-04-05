@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="int" value="int" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="numeric" value="numeric" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="double" value="double" dbms="mysql,postgresql, mariadb, h2"/>
+    <property name="boolean" value="tinyint(1)" dbms="mysql, mariadb, h2"/>
+    <property name="boolean" value="boolean" dbms="postgresql, mariadb, h2"/>
+    <property name="varchar.small" value="varchar(120)" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="varchar.medium" value="varchar(255)" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="varchar.large" value="varchar(1000)" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="varchar.very_large" value="varchar(4000)" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="text" value="text" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="timestamp" value="timestamp" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="date" value="date" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="decimal" value="decimal(10,2)" dbms="mysql, postgresql, mariadb, h2"/>
+    <property name="date.now" value="now()" dbms="mysql, postgresql, mariadb, h2"/>
+
+    <changeSet id="1" author="chairat">
+        <comment>
+            Create Table Provinces, Districts, Subdistricts
+        </comment>
+        <createTable tableName="provinces">
+            <column name="id" type="${int}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name_th" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_en" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="districts">
+            <column name="id" type="${int}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="province_id" type="${int}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_th" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_en" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="subdistricts">
+            <column name="id" type="${int}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="district_id" type="${int}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_th" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_en" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zipcode" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="districts" baseColumnNames="province_id"
+                                 constraintName="fk_provinces_districts"
+                                 referencedTableName="provinces" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="subdistricts" baseColumnNames="district_id"
+                                 constraintName="fk_districts_subdistricts"
+                                 referencedTableName="districts" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="2" author="chairat">
+        <loadData tableName="provinces"
+                  file="files/thailand-provinces.csv"/>
+    </changeSet>
+
+    <changeSet id="3" author="chairat">
+        <loadData tableName="districts"
+                  file="files/thailand-districts.csv"/>
+    </changeSet>
+
+    <changeSet id="4" author="chairat">
+        <loadData tableName="subdistricts"
+                  file="files/thailand-subdistricts.csv"/>
+    </changeSet>
+
+</databaseChangeLog>
