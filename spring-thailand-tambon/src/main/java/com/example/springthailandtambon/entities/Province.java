@@ -2,7 +2,6 @@ package com.example.springthailandtambon.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 @Table(name = "provinces")
@@ -11,7 +10,6 @@ public class Province implements Serializable{
     private Integer id;
     private String nameTh;
     private String nameEn;
-    private List<District> districts;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,14 +38,5 @@ public class Province implements Serializable{
 
     public void setNameEn(String nameEn) {
         this.nameEn = nameEn;
-    }
-
-    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL )
-    public List<District> getDistricts() {
-        return districts;
-    }
-
-    public void setDistricts(List<District> districts) {
-        this.districts = districts;
     }
 }

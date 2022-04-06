@@ -12,7 +12,6 @@ public class Subdistrict implements Serializable{
     private String nameTh;
     private String nameEn;
     private String zipcode;
-    private District district;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,13 +60,4 @@ public class Subdistrict implements Serializable{
         this.zipcode = zipcode;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "district_id", insertable = false, updatable = false)
-    public District getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(District district) {
-        this.district = district;
-    }
 }

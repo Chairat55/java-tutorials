@@ -2,7 +2,6 @@ package com.example.springthailandtambon.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 @Table(name = "districts")
@@ -12,8 +11,6 @@ public class District implements Serializable{
     private Integer provinceId;
     private String nameTh;
     private String nameEn;
-    private Province province;
-    private List<Subdistrict> subdistricts;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,22 +50,4 @@ public class District implements Serializable{
         this.nameEn = nameEn;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "province_id", insertable = false, updatable = false)
-    public Province getProvince() {
-        return province;
-    }
-
-    public void setProvince(Province province) {
-        this.province = province;
-    }
-
-    @OneToMany(mappedBy = "district", cascade = CascadeType.ALL )
-    public List<Subdistrict> getSubdistricts() {
-        return subdistricts;
-    }
-
-    public void setSubdistricts(List<Subdistrict> subdistricts) {
-        this.subdistricts = subdistricts;
-    }
 }

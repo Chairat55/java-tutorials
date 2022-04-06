@@ -1,6 +1,12 @@
 package com.example.springthailandtambon.services;
 
 import com.example.springthailandtambon.dtos.AddressDTO;
+import com.example.springthailandtambon.entities.District;
+import com.example.springthailandtambon.entities.Province;
+import com.example.springthailandtambon.entities.Subdistrict;
+import com.example.springthailandtambon.repositories.DistrictRepository;
+import com.example.springthailandtambon.repositories.ProvinceRepository;
+import com.example.springthailandtambon.repositories.SubdistrictRepository;
 import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +18,13 @@ import java.util.List;
 
 @Service
 public class AddressService {
+
+    @Autowired
+    private ProvinceRepository provinceRepository;
+    @Autowired
+    private DistrictRepository districtRepository;
+    @Autowired
+    private SubdistrictRepository subdistrictRepository;
 
     @Autowired
     private EntityManager em;
@@ -57,6 +70,18 @@ public class AddressService {
         int totalPage = (int) Math.ceil(totalResult / (size + 0.0));
 
         return new AddressDTO(page, size, totalPage, totalResult, result);
+    }
+
+    public List<Province> getProvinces() {
+        return provinceRepository.findAll();
+    }
+
+    public List<District> getDistricts(int provinceId) {
+        return districtRepository.findAllByProvinceId(provinceId);
+    }
+
+    public List<Subdistrict> getSubdistricts(int districtId) {
+        return subdistrictRepository.findAllByDistrictId(districtId);
     }
 
 }
