@@ -22,4 +22,5 @@ public class UploadController {
     public void uploadImageBase64(@RequestBody ReqImageBase64DTO dto) {
         uploadService.uploadImageBase64(dto);
     }
+
 }
