@@ -13,7 +13,7 @@ public class UserController {
     @GetMapping("/me")
     public User getProfile(
             Authentication authentication
-    ){
+    ) {
         return (User) authentication.getPrincipal();
     }
 
