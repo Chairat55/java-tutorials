@@ -4,20 +4,22 @@ import com.example.springelastic.entities.documents.UserDocument;
 import com.example.springelastic.entities.User;
 import com.example.springelastic.repositories.UserRepository;
 import com.example.springelastic.repositories.els.UserDocumentRepository;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,17 +34,28 @@ public class UserService {
 
     @Autowired
     private ElasticsearchOperations elasticsearchOperations;
+    @Autowired
+    private ModelMapper modelMapper;
 
-    public void initUser () {
-        for (int i = 1; i <= 5; i++) {
-            userRepository.saveAndFlush(
-                    new User(
-                            "User_" + i,
-                            "FirstName" + i,
-                            "LastName_" + i,
-                            "Email_" + i
-                    )
+    public void initUser() {
+        Random rand = new Random();
+
+        for (int i = 1; i <= 10; i++) {
+            // Obtain a number between [0 - 99].
+            int age = rand.nextInt(100);
+
+            User user = new User(
+                    "User_" + age,
+                    "FirstName" + age,
+                    "LastName_" + age,
+                    "Email_" + age,
+                    age
             );
+            userRepository.saveAndFlush(user);
+
+            UserDocument userDocument = new UserDocument();
+            modelMapper.map(user, userDocument);
+            userDocumentRepository.save(userDocument);
         }
     }
 
@@ -50,24 +63,32 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<UserDocument> listFromElastic(String username) {
-        Criteria criteriaBrand = new Criteria("username");
-        if(!username.equals("")){
-            criteriaBrand.is(username);
+    public List<UserDocument> listFromElastic(
+            String username,
+            Integer ageFrom,
+            Integer ageTo
+    ) {
+        BoolQueryBuilder qb = new BoolQueryBuilder();
+
+        if (!username.equals("")) {
+            qb.must(new MatchQueryBuilder("username", username));
+        }
+        if (ageFrom != null) {
+            qb.must(new RangeQueryBuilder("age").gte(ageFrom));
+        }
+        if (ageTo != null) {
+            qb.must(new RangeQueryBuilder("age").lte(ageTo));
         }
 
-        // TODO: Like ทำ setting search ไทย ด้วย
-
-        // TODO: Less than, getter than
-
-        // TODO: Between
-
-        Query searchQuery = new CriteriaQuery(criteriaBrand);
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(qb)
+                .build();
 
         SearchHits<UserDocument> search = elasticsearchOperations
-                .search(searchQuery,
-                        UserDocument.class,
-                        IndexCoordinates.of("users"));
+                .search(
+                        searchQuery,
+                        UserDocument.class
+                );
 
         return search.stream().map(SearchHit::getContent).collect(Collectors.toList());
     }
@@ -79,8 +100,10 @@ public class UserService {
         logger.info("Start re-index users : " + users.size());
 
         List<UserDocument> userDocuments = new ArrayList<>();
-        for(User u : users){
-            userDocuments.add(new UserDocument(u.getId(), u.getUsername(), u.getFirstName(), u.getLastName(), u.getEmail()));
+        for (User u : users) {
+            UserDocument userDocument = new UserDocument();
+            modelMapper.map(u, userDocument);
+            userDocuments.add(userDocument);
         }
         this.userDocumentRepository.saveAll(userDocuments);
     }

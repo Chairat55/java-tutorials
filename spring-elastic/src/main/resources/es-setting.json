@@ -1,0 +1,23 @@
+{
+  "analysis": {
+    "analyzer": {
+      "thai_text": {
+        "type": "custom",
+        "tokenizer": "thai",
+        "filter": [
+          "lowercase"
+        ]
+      }
+    },
+    "normalizer": {
+      "custom_sort_normalizer": {
+        "type": "custom",
+        "char_filter": [],
+        "filter": [
+          "lowercase",
+          "asciifolding"
+        ]
+      }
+    }
+  }
+}

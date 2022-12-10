@@ -22,14 +22,21 @@ public class UserController {
 
     @GetMapping("/elastic")
     public List<UserDocument> listFromElastic(
-            String username
+            @RequestParam(required = false, defaultValue = "") String username,
+            @RequestParam(required = false) Integer ageFrom,
+            @RequestParam(required = false) Integer ageTo
     ) {
-        return userService.listFromElastic(username);
+        return userService.listFromElastic(username, ageFrom, ageTo);
     }
 
     @PutMapping("/elastic/re-index")
     public void reIndex() {
         userService.reIndex();
+    }
+
+    @PostMapping("/init")
+    public void initUser() {
+        userService.initUser();
     }
 
 }

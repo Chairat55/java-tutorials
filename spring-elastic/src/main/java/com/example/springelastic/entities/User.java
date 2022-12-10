@@ -13,14 +13,22 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
+    private int age;
 
     public User() { }
 
-    public User(String username, String firstName, String lastName, String email) {
+    public User(
+            String username,
+            String firstName,
+            String lastName,
+            String email,
+            int age
+    ) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.age = age;
     }
 
     @Id
@@ -68,6 +76,15 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Column(name = "age")
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }
 

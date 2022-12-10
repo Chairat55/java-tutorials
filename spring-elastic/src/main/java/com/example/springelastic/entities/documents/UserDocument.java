@@ -1,25 +1,36 @@
 package com.example.springelastic.entities.documents;
 
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import javax.persistence.*;
 
 @Document(indexName = "users")
+@Setting(settingPath = "es-setting.json")
 public class UserDocument {
     private int id;
     private String username;
     private String firstName;
     private String lastName;
     private String email;
+    private int age;
 
     public UserDocument() { }
 
-    public UserDocument(int id, String username, String firstName, String lastName, String email) {
+    public UserDocument(
+            int id,
+            String username,
+            String firstName,
+            String lastName,
+            String email,
+            int age
+    ) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.age = age;
     }
 
     @Id
@@ -67,6 +78,15 @@ public class UserDocument {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Column(name = "age")
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }
 
